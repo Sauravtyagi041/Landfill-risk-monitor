@@ -1,8 +1,13 @@
 import os
 import json
-import boto3
 import sys
 from datetime import datetime, timezone
+
+try:
+    import boto3
+except ImportError:
+    boto3 = None
+
 
 # Add utils directory to sys.path for Lambda package import support
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -18,11 +23,12 @@ DYNAMODB_CACHE_TABLE = os.getenv("AQI_CACHE_TABLE", "LandRisk-AQICache")
 def get_cached_reading(landfill_id, lat, lon):
     """Retrieve reading from DynamoDB cache table or fallback generator."""
     try:
-        dynamodb = boto3.resource('dynamodb')
-        table = dynamodb.Table(DYNAMODB_CACHE_TABLE)
-        resp = table.get_item(Key={'landfill_id': landfill_id})
-        if 'Item' in resp:
-            return resp['Item']
+        if boto3:
+            dynamodb = boto3.resource('dynamodb')
+            table = dynamodb.Table(DYNAMODB_CACHE_TABLE)
+            resp = table.get_item(Key={'landfill_id': landfill_id})
+            if 'Item' in resp:
+                return resp['Item']
     except Exception as e:
         print(f"Cache fetch error for {landfill_id}: {e}")
 
