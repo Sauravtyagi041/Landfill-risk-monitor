@@ -79,11 +79,12 @@ export default function MapView({
   onSelectLandfill,
   onMapClick
 }) {
-  const [mapTileStyle, setMapTileStyle] = useState('dark'); // 'dark' | 'satellite'
+  const [mapTileStyle, setMapTileStyle] = useState('google'); // 'google' | 'hybrid' | 'osm'
 
   const tileUrls = {
-    dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-    satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+    google: 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+    hybrid: 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
+    osm: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
   };
 
   const selectedLf = landfills.find(l => l.id === (selectedLandfill?.id || landfills[0]?.id)) || landfills[0];
@@ -94,7 +95,7 @@ export default function MapView({
         selectedLf.lat,
         selectedLf.lon,
         selectedLf.wind?.direction_deg || 245,
-        Math.min(12.0, Math.max(4.0, selectedLf.distance_km * 1.5))
+        Math.min(12.0, Math.max(4.0, (selectedLf.distance_km ?? 5.0) * 1.5))
       )
     : [];
 
@@ -119,7 +120,7 @@ export default function MapView({
         <MapClickHandler onClick={onMapClick} />
 
         <TileLayer
-          attribution='&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap'
+          attribution='&copy; Google Maps &copy; OpenStreetMap'
           url={tileUrls[mapTileStyle]}
         />
 
@@ -181,11 +182,17 @@ export default function MapView({
         {/* Landfill Markers */}
         {landfills.map((lf) => {
           const isSelected = selectedLf?.id === lf.id;
+          const riskLabel = lf.risk_label || 'Low';
+          const distanceKm = lf.distance_km ?? 5.0;
+          const currentAqi = lf.current_aqi ?? 120;
+          const windSpeed = lf.wind?.speed_kmh ?? 12.0;
+          const windCardinal = lf.wind?.cardinal ?? 'SW';
+
           return (
             <Marker
               key={lf.id}
               position={[lf.lat, lf.lon]}
-              icon={createLandfillIcon(lf.risk_label, isSelected)}
+              icon={createLandfillIcon(riskLabel, isSelected)}
               eventHandlers={{
                 click: () => onSelectLandfill(lf)
               }}
@@ -194,15 +201,15 @@ export default function MapView({
                 <div className="p-1.5 font-sans min-w-[200px]">
                   <div className="flex items-center justify-between gap-2 border-b border-slate-700 pb-1 mb-1.5">
                     <h3 className="font-bold text-sm text-slate-100">{lf.name}</h3>
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold risk-badge-${lf.risk_label.toLowerCase()}`}>
-                      {lf.risk_label} ({lf.risk_score})
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold risk-badge-${riskLabel.toLowerCase()}`}>
+                      {riskLabel} ({lf.risk_score || 0})
                     </span>
                   </div>
                   <p className="text-xs text-slate-300 mb-1">{lf.city}, {lf.country}</p>
                   <div className="text-[11px] text-slate-400 space-y-0.5 font-mono bg-slate-900/60 p-2 rounded border border-slate-800">
-                    <div>Distance: <span className="text-sky-400 font-semibold">{lf.distance_km} km</span></div>
-                    <div>AQI: <span className="text-amber-400 font-semibold">{lf.current_aqi}</span></div>
-                    <div>Wind: <span className="text-emerald-400">{lf.wind?.speed_kmh} km/h ({lf.wind?.cardinal})</span></div>
+                    <div>Distance: <span className="text-sky-400 font-semibold">{distanceKm} km</span></div>
+                    <div>AQI: <span className="text-amber-400 font-semibold">{currentAqi}</span></div>
+                    <div>Wind: <span className="text-emerald-400">{windSpeed} km/h ({windCardinal})</span></div>
                     <div>Downwind Vector: <span className={lf.wind_toward_user ? 'text-rose-400 font-bold' : 'text-slate-400'}>{lf.wind_toward_user ? 'YES (1.5x factor)' : 'NO'}</span></div>
                   </div>
                   <button
@@ -219,13 +226,36 @@ export default function MapView({
       </MapContainer>
 
       {/* Floating Map Controls Legend */}
-      <div className="absolute top-4 right-4 z-[400] flex flex-col gap-2">
+      <div className="absolute top-4 right-4 z-[400] flex items-center gap-1.5 bg-slate-900/90 border border-slate-700/80 p-1 rounded-xl shadow-2xl backdrop-blur-md">
         <button
-          onClick={() => setMapTileStyle(mapTileStyle === 'dark' ? 'satellite' : 'dark')}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700 text-xs shadow-xl backdrop-blur-md transition-all"
+          onClick={() => setMapTileStyle('google')}
+          className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+            mapTileStyle === 'google'
+              ? 'bg-sky-500 text-slate-950 shadow-md'
+              : 'text-slate-300 hover:text-white hover:bg-slate-800'
+          }`}
         >
-          <Layers className="w-3.5 h-3.5 text-sky-400" />
-          <span>{mapTileStyle === 'dark' ? 'Satellite View' : 'Dark Map'}</span>
+          Google Map
+        </button>
+        <button
+          onClick={() => setMapTileStyle('hybrid')}
+          className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+            mapTileStyle === 'hybrid'
+              ? 'bg-sky-500 text-slate-950 shadow-md'
+              : 'text-slate-300 hover:text-white hover:bg-slate-800'
+          }`}
+        >
+          Satellite
+        </button>
+        <button
+          onClick={() => setMapTileStyle('osm')}
+          className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+            mapTileStyle === 'osm'
+              ? 'bg-sky-500 text-slate-950 shadow-md'
+              : 'text-slate-300 hover:text-white hover:bg-slate-800'
+          }`}
+        >
+          OSM
         </button>
       </div>
 

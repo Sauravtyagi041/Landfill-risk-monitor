@@ -7,7 +7,7 @@ export default function ArchitectureModal({ isOpen, onClose }) {
   return (
     <div className="fixed inset-0 z-[1000] bg-slate-950/80 backdrop-blur-lg flex items-center justify-center p-4">
       <div className="bg-slate-900 border border-slate-700 w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden text-slate-100 font-sans">
-        
+
         {/* Modal Header */}
         <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/50">
           <div className="flex items-center gap-2">
@@ -26,16 +26,16 @@ export default function ArchitectureModal({ isOpen, onClose }) {
 
         {/* Modal Body */}
         <div className="p-6 overflow-y-auto space-y-6">
-          
+
           {/* Architecture Pipeline Visualizer */}
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-sky-400 mb-3 flex items-center gap-1.5">
               <Layers className="w-4 h-4" />
               End-to-End Data Pipeline Architecture
             </h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-5 gap-3 text-xs">
-              
+
               {/* Step 1: Data Sources */}
               <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-2">
                 <div className="font-bold text-sky-400 flex items-center gap-1">
