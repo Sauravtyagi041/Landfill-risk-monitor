@@ -1,0 +1,125 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: LandRisk - Serverless Landfill Proximity & Environmental Exposure Risk Architecture
+
+Globals:
+  Function:
+    Timeout: 15
+    MemorySize: 256
+    Runtime: python3.11
+    Environment:
+      Variables:
+        LANDFILLS_TABLE: !Ref LandfillsTable
+        AQI_CACHE_TABLE: !Ref AQICacheTable
+        SECRETS_NAME: !Ref LandRiskApiKeys
+
+Resources:
+  # ------------------------------------------------------------
+  # DynamoDB Storage Tables
+  # ------------------------------------------------------------
+  LandfillsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: LandRisk-Landfills
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+
+  AQICacheTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: LandRisk-AQICache
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: landfill_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: landfill_id
+          KeyType: HASH
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+
+  # ------------------------------------------------------------
+  # Secrets Manager (WAQI & OpenWeather API Keys)
+  # ------------------------------------------------------------
+  LandRiskApiKeys:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: LandRisk/ApiKeys
+      Description: Secret store for WAQI and OpenWeather API keys
+      SecretString: '{"WAQI_API_KEY":"YOUR_WAQI_KEY_HERE","OPENWEATHER_API_KEY":"YOUR_OPENWEATHER_KEY_HERE"}'
+
+  # ------------------------------------------------------------
+  # API Gateway REST API
+  # ------------------------------------------------------------
+  LandRiskApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Cors:
+        AllowMethods: "'GET,POST,OPTIONS'"
+        AllowHeaders: "'Content-Type,Authorization'"
+        AllowOrigin: "'*'"
+
+  # ------------------------------------------------------------
+  # Lambda Functions
+  # ------------------------------------------------------------
+  GetRiskFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: handlers/get_risk.lambda_handler
+      Description: Calculates personalized landfill proximity health risk score using distance, live AQI, and wind vector.
+      Events:
+        GetRiskApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref LandRiskApi
+            Path: /api/risk
+            Method: GET
+        PostRiskApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref LandRiskApi
+            Path: /api/risk
+            Method: POST
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AQICacheTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref LandfillsTable
+
+  RefreshCacheFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: handlers/refresh_cache.lambda_handler
+      Description: EventBridge-triggered job refreshing AQI and wind readings into DynamoDB every 15 mins.
+      Events:
+        FifteenMinCron:
+          Type: Schedule
+          Properties:
+            Schedule: rate(15 minutes)
+            Name: LandRisk-15MinRefreshSchedule
+            Description: Trigger environmental cache update every 15 minutes
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AQICacheTable
+        - SecretManagerReadWrite:
+            SecretArn: !Ref LandRiskApiKeys
+
+Outputs:
+  LandRiskApiEndpoint:
+    Description: API Gateway endpoint URL for Prod stage for LandRisk
+    Value: !Sub "https://${LandRiskApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/risk"
+  LandfillsTableName:
+    Description: DynamoDB Landfills Seed Table Name
+    Value: !Ref LandfillsTable
+  AQICacheTableName:
+    Description: DynamoDB AQI Cache Table Name
+    Value: !Ref AQICacheTable
