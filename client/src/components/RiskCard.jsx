@@ -22,8 +22,7 @@ export default function RiskCard({ data, isRefreshing }) {
     last_updated,
     disclaimer,
     nearest_landfill_details,
-    data_source,
-    disclaimer
+    data_source
   } = data;
 
   const lfDetails = nearest_landfill_details || {};
