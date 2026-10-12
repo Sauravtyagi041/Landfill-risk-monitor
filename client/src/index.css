@@ -319,7 +319,7 @@ code, pre, .font-mono {
     min-height: 44px;
   }
   .map-range-card {
-    top: 60px;
+    top: 210px !important;
     left: 8px;
     width: min(240px, calc(100vw - 16px)) !important;
     max-width: min(240px, calc(100vw - 16px)) !important;
@@ -359,9 +359,6 @@ code, pre, .font-mono {
   .map-risk-legend .map-legend-details > div:first-child {
     display: none;
   }
-  .map-layer-control.is-open ~ .map-range-card {
-    top: 164px;
-  }
 }
 
 @media (max-width: 640px) {
@@ -372,7 +369,7 @@ code, pre, .font-mono {
     width: 148px !important;
   }
   .map-range-card {
-    top: 60px;
+    top: 210px !important;
     left: 8px;
     width: min(220px, calc(100vw - 16px)) !important;
     max-width: min(220px, calc(100vw - 16px)) !important;
