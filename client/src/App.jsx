@@ -75,6 +75,7 @@ export default function App() {
 
     processed.sort((a, b) => a.distance_km - b.distance_km);
     const nearest = processed[0];
+    setSelectedLandfill(nearest);
 
     const windText = nearest.wind_toward_user ? "blowing directly towards your area" : "blowing away from your vector";
     const explanation = `${nearest.risk_label} Risk (${nearest.risk_score}/100). You are located ${nearest.distance_km} km from ${nearest.name} in ${nearest.city}. Current ambient AQI is ${nearest.current_aqi} with wind at ${nearest.wind.speed_kmh} km/h (${nearest.wind.direction_deg}° ${nearest.wind.cardinal}), ${windText}.`;
