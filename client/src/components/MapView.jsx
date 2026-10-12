@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, Polygon, CircleMarker, ZoomControl, Tooltip, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { generatePlumePolygon, degreesToCardinal } from '../utils/riskCalculator';
-import { Radio } from 'lucide-react';
+import { Radio, ChevronDown } from 'lucide-react';
 
 const TILE_LAYERS = {
   street: {
@@ -89,6 +89,8 @@ export default function MapView({
   onMapClick
 }) {
   const [mapTileStyle, setMapTileStyle] = useState('street');
+  const [isWindInfoExpanded, setIsWindInfoExpanded] = useState(false);
+  const [isRiskLegendExpanded, setIsRiskLegendExpanded] = useState(false);
   const tileLayer = TILE_LAYERS[mapTileStyle];
   const selectedLf = landfills.find(lf => lf.id === selectedLandfill?.id) || landfills[0];
 
@@ -264,33 +266,45 @@ export default function MapView({
         ))}
       </div>
 
-      <div className="map-range-card absolute top-4 left-4 z-[500] max-w-[220px] bg-slate-900/95 border border-slate-700 p-3 rounded-xl shadow-xl text-xs">
-        <p className="font-semibold text-slate-100">Estimated wind impact range</p>
-        <p className="mt-1 text-[11px] leading-relaxed text-slate-300">
-          From {selectedLf?.name || 'the selected landfill'}, wind comes from {windFromDeg}° ({selectedLf?.wind?.cardinal || 'SW'}) at {windSpeedKmh} km/h and carries the plume toward {plumeHeading}° ({plumeCardinal}).
-        </p>
-        <p className="mt-1 text-xs font-semibold text-sky-300">
-          Shaded downwind reach: up to {plumeRangeKm} km
-        </p>
-        <p className="mt-1 text-[10px] text-slate-400">Indicative model only; actual dispersion varies with weather and terrain.</p>
+      <div className={"map-range-card absolute top-4 left-4 z-[500] max-w-[220px] bg-slate-900/95 border border-slate-700 p-3 rounded-xl shadow-xl text-xs " + (isWindInfoExpanded ? 'is-expanded' : 'is-collapsed')}>
+        <button type="button" className="map-overlay-toggle map-range-toggle" aria-expanded={isWindInfoExpanded} onClick={() => setIsWindInfoExpanded((expanded) => !expanded)}>
+          <span>Wind impact · up to {plumeRangeKm} km</span>
+          <ChevronDown className="map-overlay-chevron w-4 h-4" />
+        </button>
+        <div className="map-range-details">
+          <p className="font-semibold text-slate-100">Estimated wind impact range</p>
+          <p className="mt-1 text-[11px] leading-relaxed text-slate-300">
+            From {selectedLf?.name || 'the selected landfill'}, wind comes from {windFromDeg}° ({selectedLf?.wind?.cardinal || 'SW'}) at {windSpeedKmh} km/h and carries the plume toward {plumeHeading}° ({plumeCardinal}).
+          </p>
+          <p className="mt-1 text-xs font-semibold text-sky-300">
+            Shaded downwind reach: up to {plumeRangeKm} km
+          </p>
+          <p className="mt-1 text-[10px] text-slate-400">Indicative model only; actual dispersion varies with weather and terrain.</p>
+        </div>
       </div>
 
-      <div className="map-risk-legend absolute bottom-4 left-4 z-[500] bg-slate-900/95 border border-slate-700 p-3 rounded-xl shadow-xl text-xs space-y-2">
-        <div className="flex items-center gap-2 font-semibold text-slate-200">
-          <Radio className="w-3.5 h-3.5 text-sky-400" />
-          Risk at landfill sites
+      <div className={"map-risk-legend absolute bottom-4 left-4 z-[500] bg-slate-900/95 border border-slate-700 p-3 rounded-xl shadow-xl text-xs space-y-2 " + (isRiskLegendExpanded ? 'is-expanded' : 'is-collapsed')}>
+        <button type="button" className="map-overlay-toggle map-legend-toggle" aria-expanded={isRiskLegendExpanded} onClick={() => setIsRiskLegendExpanded((expanded) => !expanded)}>
+          <span className="flex items-center gap-2"><Radio className="w-3.5 h-3.5 text-sky-400" />Risk legend</span>
+          <ChevronDown className="map-overlay-chevron w-4 h-4" />
+        </button>
+        <div className="map-legend-details">
+          <div className="flex items-center gap-2 font-semibold text-slate-200">
+            <Radio className="w-3.5 h-3.5 text-sky-400" />
+            Risk at landfill sites
+          </div>
+          <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-[11px]">
+            {Object.entries(RISK_COLORS).map(([label, color]) => (
+              <div key={label} className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
+                <span className="text-slate-300">{label}</span>
+              </div>
+            ))}
+          </div>
+          <p className="text-[10px] text-slate-400 border-t border-slate-700 pt-1.5">
+            Click an empty area to move your assessment point.
+          </p>
         </div>
-        <div className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-[11px]">
-          {Object.entries(RISK_COLORS).map(([label, color]) => (
-            <div key={label} className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
-              <span className="text-slate-300">{label}</span>
-            </div>
-          ))}
-        </div>
-        <p className="text-[10px] text-slate-400 border-t border-slate-700 pt-1.5">
-          Click an empty area to move your assessment point.
-        </p>
       </div>
     </div>
   );
