@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, Polygon, CircleMarker, ZoomControl, Tooltip, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { generatePlumePolygon, degreesToCardinal } from '../utils/riskCalculator';
-import { Radio, ChevronDown } from 'lucide-react';
+import { Radio, ChevronDown, Map as MapIcon } from 'lucide-react';
 
 const TILE_LAYERS = {
   street: {
@@ -254,12 +254,14 @@ export default function MapView({
       <div className={"map-layer-control absolute top-4 right-4 z-[500] bg-slate-900/95 border border-slate-700 p-1 rounded-xl shadow-xl " + (isLayerMenuOpen ? 'is-open' : '')}>
         <button
           type="button"
-          className="map-layer-menu-trigger flex items-center justify-between gap-3 px-3 py-2 rounded-lg text-sm font-semibold text-slate-100 hover:bg-slate-800"
+          className="map-layer-menu-trigger flex items-center justify-center gap-3 px-3 py-2 rounded-lg text-sm font-semibold text-slate-100 hover:bg-slate-800"
+          aria-label={`Map style: ${TILE_LAYERS[mapTileStyle].name}`}
           aria-expanded={isLayerMenuOpen}
           aria-controls="map-layer-options"
           onClick={() => setIsLayerMenuOpen((open) => !open)}
         >
-          <span>Map · {TILE_LAYERS[mapTileStyle].name}</span>
+          <span className="sr-only">Map style: {TILE_LAYERS[mapTileStyle].name}</span>
+          <MapIcon className="w-5 h-5 text-sky-300" aria-hidden="true" />
           <ChevronDown className={"map-overlay-chevron w-4 h-4 " + (isLayerMenuOpen ? 'rotate-180' : '')} />
         </button>
         {isLayerMenuOpen && (
