@@ -291,7 +291,7 @@ export default function MapView({
       <div className={"map-range-card absolute top-4 left-4 z-[500] max-w-[220px] bg-slate-900/95 border border-slate-700 p-3 rounded-xl shadow-xl text-xs " + (isWindInfoExpanded ? 'is-expanded' : 'is-collapsed')}>
         <button type="button" className="map-overlay-toggle map-range-toggle" aria-expanded={isWindInfoExpanded} onClick={() => setIsWindInfoExpanded((expanded) => !expanded)}>
           <span>Wind impact · up to {plumeRangeKm} km</span>
-          <ChevronDown className="map-overlay-chevron w-4 h-4" />
+          <ChevronDown className={"map-overlay-chevron w-4 h-4 " + (isWindInfoExpanded ? 'rotate-180' : '')} />
         </button>
         <div className="map-range-details">
           <p className="font-semibold text-slate-100">Estimated wind impact range</p>
