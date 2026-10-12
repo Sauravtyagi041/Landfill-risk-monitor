@@ -248,14 +248,14 @@ export default function MapView({
         })}
       </MapContainer>
 
-      <div className="absolute top-4 right-4 z-[500] flex items-center gap-1 bg-slate-900/95 border border-slate-700 p-1 rounded-xl shadow-xl">
+      <div className="map-layer-control absolute top-4 right-4 z-[500] flex items-center gap-1 bg-slate-900/95 border border-slate-700 p-1 rounded-xl shadow-xl">
         {Object.entries(TILE_LAYERS).map(([key, layer]) => (
           <button
             key={key}
             type="button"
             aria-pressed={mapTileStyle === key}
             onClick={() => setMapTileStyle(key)}
-            className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+            className={`map-layer-button px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
               mapTileStyle === key ? 'bg-sky-400 text-slate-950' : 'text-slate-300 hover:bg-slate-800 hover:text-white'
             }`}
           >
@@ -264,7 +264,7 @@ export default function MapView({
         ))}
       </div>
 
-      <div className="absolute top-4 left-4 z-[500] max-w-[220px] bg-slate-900/95 border border-slate-700 p-3 rounded-xl shadow-xl text-xs">
+      <div className="map-range-card absolute top-4 left-4 z-[500] max-w-[220px] bg-slate-900/95 border border-slate-700 p-3 rounded-xl shadow-xl text-xs">
         <p className="font-semibold text-slate-100">Estimated wind impact range</p>
         <p className="mt-1 text-[11px] leading-relaxed text-slate-300">
           From {selectedLf?.name || 'the selected landfill'}, wind comes from {windFromDeg}° ({selectedLf?.wind?.cardinal || 'SW'}) at {windSpeedKmh} km/h and carries the plume toward {plumeHeading}° ({plumeCardinal}).
@@ -275,7 +275,7 @@ export default function MapView({
         <p className="mt-1 text-[10px] text-slate-400">Indicative model only; actual dispersion varies with weather and terrain.</p>
       </div>
 
-      <div className="absolute bottom-4 left-4 z-[500] bg-slate-900/95 border border-slate-700 p-3 rounded-xl shadow-xl text-xs space-y-2">
+      <div className="map-risk-legend absolute bottom-4 left-4 z-[500] bg-slate-900/95 border border-slate-700 p-3 rounded-xl shadow-xl text-xs space-y-2">
         <div className="flex items-center gap-2 font-semibold text-slate-200">
           <Radio className="w-3.5 h-3.5 text-sky-400" />
           Risk at landfill sites
