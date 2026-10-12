@@ -28,6 +28,10 @@ export default function RiskCard({ data, isRefreshing }) {
   const lfDetails = nearest_landfill_details || {};
   const wind = lfDetails.wind || { speed_kmh: 12.0, direction_deg: 245, cardinal: 'SW' };
   const pollutants = lfDetails.pollutants || { pm25: 78, pm10: 112, no2: 34, so2: 12, o3: 18 };
+  const modeledRainfallMm = lfDetails.precipitation_mm == null
+    ? null
+    : Number(lfDetails.precipitation_mm);
+  const rainReported = Number.isFinite(modeledRainfallMm) && modeledRainfallMm > 0;
 
   // Gauge needle rotation (score 0 to 100 maps to -90deg to +90deg)
   const needleRotation = -90 + (risk_score / 100) * 180;
@@ -213,6 +217,31 @@ export default function RiskCard({ data, isRefreshing }) {
               <p className="mt-1 text-[11px] leading-relaxed text-slate-300">
                 The model shows elevated risk with wind toward your location. If outdoor air quality is poor, keep windows and doors closed and check official local AQI updates. This is a precaution based on modeled data, not a verified landfill-emission alert.
               </p>
+            </div>
+          </div>
+        )}
+        <div className="rounded-lg bg-slate-900/70 border border-slate-700 p-3">
+          <p className="text-xs font-semibold text-slate-200">Groundwater safety: not assessed</p>
+          <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
+            This dashboard has no groundwater sample data, so it cannot tell whether nearby well or hand-pump water is safe to drink. Rainfall or landfill proximity alone does not confirm contamination.
+          </p>
+        </div>
+        {rainReported && (
+          <div className="flex gap-2 rounded-lg bg-amber-500/10 border border-amber-400/30 p-3" role="status">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />
+            <div>
+              <p className="text-xs font-semibold text-amber-200">Rainfall &amp; water-source precaution</p>
+              <p className="mt-1 text-[11px] leading-relaxed text-slate-300">
+                The weather model reports {modeledRainfallMm.toFixed(1)} mm of current precipitation near {landfill}. This is not a groundwater test. If floodwater or runoff may have reached a well or hand pump, use a known safe drinking-water source until local authorities or an accredited lab confirms it is safe. Boiling does not remove many chemical contaminants.
+              </p>
+              <a
+                href="https://www.who.int/news-room/questions-and-answers/item/how-do-i-protect-my-health-in-a-flood/"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-2 inline-flex text-[11px] font-semibold text-sky-300 underline underline-offset-2 hover:text-sky-200"
+              >
+                WHO flood water-safety guidance
+              </a>
             </div>
           </div>
         )}
