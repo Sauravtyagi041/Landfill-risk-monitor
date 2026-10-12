@@ -319,10 +319,10 @@ code, pre, .font-mono {
     min-height: 44px;
   }
   .map-range-card {
-    top: 210px !important;
+    top: 8px !important;
     left: 8px;
-    width: min(240px, calc(100vw - 16px)) !important;
-    max-width: min(240px, calc(100vw - 16px)) !important;
+    width: min(190px, calc(100vw - 172px)) !important;
+    max-width: min(190px, calc(100vw - 172px)) !important;
     padding: 0;
     overflow: hidden;
   }
@@ -353,7 +353,7 @@ code, pre, .font-mono {
     display: none;
   }
   .map-range-details {
-    max-height: 30dvh;
+    max-height: 22dvh;
     overflow-y: auto;
   }
   .map-risk-legend .map-legend-details > div:first-child {
@@ -369,14 +369,14 @@ code, pre, .font-mono {
     width: 148px !important;
   }
   .map-range-card {
-    top: 210px !important;
+    top: 8px !important;
     left: 8px;
-    width: min(220px, calc(100vw - 16px)) !important;
-    max-width: min(220px, calc(100vw - 16px)) !important;
+    width: min(166px, calc(100vw - 164px)) !important;
+    max-width: min(166px, calc(100vw - 164px)) !important;
     font-size: 11px;
   }
   .map-range-card.is-expanded .map-range-details {
-    max-height: 26dvh;
+    max-height: 20dvh;
   }
   .map-range-card.is-collapsed .map-range-details,
   .map-risk-legend.is-collapsed .map-legend-details {
