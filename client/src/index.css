@@ -352,6 +352,8 @@ code, pre, .font-mono {
     bottom: 8px;
     left: 8px;
     right: auto;
+    display: flex;
+    flex-direction: column;
     max-width: min(190px, calc(100vw - 16px));
     max-height: calc(50% - 16px);
     padding: 0;
