@@ -290,6 +290,25 @@ code, pre, .font-mono {
   width: 220px;
   max-width: calc(100% - 32px);
 }
+.map-overlay-toggle {
+  display: flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 10px;
+  color: #e2e8f0;
+  font-size: 12px;
+  line-height: 1.25;
+  font-weight: 700;
+  text-align: left;
+  touch-action: manipulation;
+}
+.map-range-card.is-collapsed .map-range-details,
+.map-risk-legend.is-collapsed .map-legend-details {
+  display: none;
+}
 .map-overlay-chevron {
   flex: 0 0 auto;
   transition: transform 160ms ease;
