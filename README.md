@@ -4,6 +4,8 @@ LandRisk is a map-based dashboard for exploring modeled exposure risk around maj
 
 **Project:** [Landfill Risk Monitor on GitHub](https://github.com/Sauravtyagi041/Landfill-risk-monitor)
 
+**Prototype (local):** [http://localhost:3000](http://localhost:3000) — start the dashboard with `npm run dev` from the `client/` directory.
+
 > **Note:** LandRisk is a demonstration and decision-support prototype. Its modeled scores are not medical advice, regulatory measurements, or a substitute for official environmental monitoring.
 
 ## Features
