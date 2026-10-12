@@ -260,7 +260,7 @@ export default function RiskCard({ data, isRefreshing }) {
         <div className="flex items-center justify-between">
           <span className="flex items-center gap-1 text-slate-400">
             <Clock className="w-3 h-3 text-sky-400" />
-            Last Cache Sync:
+            Last data refresh:
           </span>
           <span className="text-slate-300">{new Date(last_updated).toLocaleTimeString()}</span>
         </div>
