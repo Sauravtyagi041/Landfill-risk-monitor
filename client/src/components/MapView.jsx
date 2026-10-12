@@ -89,6 +89,7 @@ export default function MapView({
   onMapClick
 }) {
   const [mapTileStyle, setMapTileStyle] = useState('street');
+  const [isLayerMenuOpen, setIsLayerMenuOpen] = useState(false);
   const [isWindInfoExpanded, setIsWindInfoExpanded] = useState(false);
   const [isRiskLegendExpanded, setIsRiskLegendExpanded] = useState(false);
   const tileLayer = TILE_LAYERS[mapTileStyle];
@@ -250,20 +251,37 @@ export default function MapView({
         })}
       </MapContainer>
 
-      <div className="map-layer-control absolute top-4 right-4 z-[500] flex items-center gap-1 bg-slate-900/95 border border-slate-700 p-1 rounded-xl shadow-xl">
-        {Object.entries(TILE_LAYERS).map(([key, layer]) => (
-          <button
-            key={key}
-            type="button"
-            aria-pressed={mapTileStyle === key}
-            onClick={() => setMapTileStyle(key)}
-            className={`map-layer-button px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-              mapTileStyle === key ? 'bg-sky-400 text-slate-950' : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-            }`}
-          >
-            {layer.name}
-          </button>
-        ))}
+      <div className={"map-layer-control absolute top-4 right-4 z-[500] bg-slate-900/95 border border-slate-700 p-1 rounded-xl shadow-xl " + (isLayerMenuOpen ? 'is-open' : '')}>
+        <button
+          type="button"
+          className="map-layer-menu-trigger flex items-center justify-between gap-3 px-3 py-2 rounded-lg text-sm font-semibold text-slate-100 hover:bg-slate-800"
+          aria-expanded={isLayerMenuOpen}
+          aria-controls="map-layer-options"
+          onClick={() => setIsLayerMenuOpen((open) => !open)}
+        >
+          <span>Map · {TILE_LAYERS[mapTileStyle].name}</span>
+          <ChevronDown className={"map-overlay-chevron w-4 h-4 " + (isLayerMenuOpen ? 'rotate-180' : '')} />
+        </button>
+        {isLayerMenuOpen && (
+          <div id="map-layer-options" className="map-layer-options" role="group" aria-label="Map style">
+            {Object.entries(TILE_LAYERS).map(([key, layer]) => (
+              <button
+                key={key}
+                type="button"
+                aria-pressed={mapTileStyle === key}
+                onClick={() => {
+                  setMapTileStyle(key);
+                  setIsLayerMenuOpen(false);
+                }}
+                className={"map-layer-option rounded-lg text-sm font-semibold transition-colors " + (
+                  mapTileStyle === key ? 'bg-sky-400 text-slate-950' : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                )}
+              >
+                {layer.name}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className={"map-range-card absolute top-4 left-4 z-[500] max-w-[220px] bg-slate-900/95 border border-slate-700 p-3 rounded-xl shadow-xl text-xs " + (isWindInfoExpanded ? 'is-expanded' : 'is-collapsed')}>
