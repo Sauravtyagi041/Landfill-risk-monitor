@@ -21,7 +21,9 @@ export default function RiskCard({ data, isRefreshing }) {
     explanation,
     last_updated,
     disclaimer,
-    nearest_landfill_details
+    nearest_landfill_details,
+    data_source,
+    disclaimer
   } = data;
 
   const lfDetails = nearest_landfill_details || {};
@@ -124,7 +126,7 @@ export default function RiskCard({ data, isRefreshing }) {
       <div className="grid grid-cols-2 gap-3">
         {/* AQI Panel */}
         <div className="glass-panel p-3.5 rounded-xl border border-slate-800">
-          <div className="text-[11px] text-slate-400 font-semibold mb-1">AQI (Nearby Station)</div>
+          <div className="text-[11px] text-slate-400 font-semibold mb-1">AQI (Model Estimate)</div>
           <div className="flex items-baseline gap-2">
             <span className="text-2xl font-bold font-heading text-slate-100">{current_aqi}</span>
             <span className={`text-[11px] font-semibold ${aqiCat.color}`}>{aqiCat.text}</span>
@@ -134,7 +136,7 @@ export default function RiskCard({ data, isRefreshing }) {
         {/* Wind Vector Panel */}
         <div className="glass-panel p-3.5 rounded-xl border border-slate-800">
           <div className="text-[11px] text-slate-400 font-semibold mb-1 flex items-center justify-between">
-            <span>Wind (Current)</span>
+            <span>Wind (Current Model)</span>
             <Wind className="w-3.5 h-3.5 text-sky-400" />
           </div>
           <div className="flex items-baseline gap-1.5">
@@ -145,6 +147,15 @@ export default function RiskCard({ data, isRefreshing }) {
             </span>
           </div>
         </div>
+      </div>
+
+      <div className="flex items-center justify-between gap-2 px-1 text-[10px] text-slate-400">
+        <span className={data_source?.includes('unavailable') ? 'text-amber-300' : 'text-emerald-300'}>
+          {data_source?.includes('unavailable') ? 'Live feed unavailable · demo values' : 'Current provider model data'}
+        </span>
+        <a href="https://open-meteo.com/" target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-sky-300">
+          Open-Meteo source
+        </a>
       </div>
 
       {/* Downwind Risk Factor Indicator */}
@@ -255,7 +266,7 @@ export default function RiskCard({ data, isRefreshing }) {
           <span className="text-slate-300">{new Date(last_updated).toLocaleTimeString()}</span>
         </div>
         <p className="text-[10px] text-amber-400/90 font-sans italic pt-1 border-t border-slate-800">
-          Disclaimer: Modeled estimate, refreshed every 15 min via AWS EventBridge & DynamoDB.
+          {disclaimer}
         </p>
       </div>
 
