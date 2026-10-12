@@ -311,12 +311,7 @@ code, pre, .font-mono {
 }
 .map-overlay-chevron {
   flex: 0 0 auto;
-  transition: transform 160ms ease;
-}
-.map-range-card.is-expanded .map-overlay-chevron,
-.map-risk-legend.is-expanded .map-overlay-chevron,
-.map-layer-menu-trigger .map-overlay-chevron.rotate-180 {
-  transform: rotate(180deg);
+  transition: rotate 160ms ease;
 }
 .map-range-details,
 .map-legend-details {
