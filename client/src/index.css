@@ -257,16 +257,22 @@ code, pre, .font-mono {
 /* Keep map overlays compact by default so they cannot cover the layer switcher or map. */
 .map-layer-control {
   top: 8px;
-  right: 8px;
-  left: auto;
-  z-index: 1000;
-  gap: 2px;
+  left: 50%;
+  right: auto;
+  z-index: 1200;
+  gap: 3px;
   padding: 3px;
+  transform: translateX(-50%);
 }
 .map-layer-button {
-  min-height: 38px;
-  padding: 6px 9px;
-  font-size: 11px;
+  display: flex;
+  min-width: 64px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  font-size: 12px;
+  touch-action: manipulation;
 }
 .map-overlay-toggle {
   display: flex;
@@ -284,7 +290,7 @@ code, pre, .font-mono {
   touch-action: manipulation;
 }
 .map-range-card {
-  top: 54px;
+  top: 60px;
   left: 8px;
   max-width: min(240px, calc(100% - 16px));
   width: max-content;
