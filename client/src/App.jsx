@@ -11,6 +11,7 @@ import {
   calculateLandRiskScore,
   degreesToCardinal
 } from './utils/riskCalculator';
+import { fetchLiveEnvironmentalReadings } from './utils/liveEnvironmentalData';
 
 export default function App() {
   // Default location centered around Ghazipur Landfill, Delhi (28.60, 77.30)
@@ -20,32 +21,22 @@ export default function App() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isArchModalOpen, setIsArchModalOpen] = useState(false);
 
-  // Core risk evaluator function (tries AWS API Gateway backend first, falls back to client math)
-  const evaluateRisk = useCallback(async (location) => {
+  // Load current modeled weather and air-quality data; clearly label offline fallback values.
+  const evaluateRisk = useCallback(async (location, { forceRefresh = false } = {}) => {
+    let liveData = null;
     try {
-      // Attempt backend API call to AWS Lambda /api/risk
-      const response = await fetch(`/api/risk?lat=${location.lat}&lon=${location.lon}`);
-      if (response.ok) {
-        const data = await response.json();
-        setRiskData(data);
-        if (data.nearest_landfill_details) {
-          setSelectedLandfill(data.nearest_landfill_details);
-        }
-        return;
-      }
-    } catch (e) {
-      // API unreached, proceed to seamless client-side computation
+      liveData = await fetchLiveEnvironmentalReadings(SEED_LANDFILLS, { forceRefresh });
+    } catch (error) {
+      console.warn('Live environmental feed unavailable; showing labeled modeled fallback.', error);
     }
 
-    // Client-side fallback evaluator matching AWS Lambda risk formula
-    const processed = SEED_LANDFILLS.map((lf) => {
+    const fetchedAt = liveData?.fetched_at || new Date().toISOString();
+    const processed = SEED_LANDFILLS.map((lf, index) => {
       const dist = haversineDistance(location.lat, location.lon, lf.lat, lf.lon);
-      
-      // Simulated deterministic wind & AQI for offline rendering
-      const hour = new Date().getHours();
-      const baseAqi = 110 + (Math.abs(lf.name.length * 17) % 75);
-      const windDeg = (235 + (Math.abs(lf.name.length * 11) % 50)) % 360;
-      const windSpeed = 12.0;
+      const reading = liveData?.readings[index];
+      const baseAqi = reading?.aqi ?? (110 + (Math.abs(lf.name.length * 17) % 75));
+      const windDeg = reading?.wind_direction_deg ?? ((235 + (Math.abs(lf.name.length * 11) % 50)) % 360);
+      const windSpeed = reading?.wind_speed_kmh ?? 12.0;
 
       const windToward = isWindBlowingTowardUser(lf.lat, lf.lon, location.lat, location.lon, windDeg);
       const { score, label } = calculateLandRiskScore(baseAqi, dist, windToward);
@@ -54,7 +45,13 @@ export default function App() {
         ...lf,
         distance_km: Math.round(dist * 100) / 100,
         current_aqi: baseAqi,
-        pollutants: {
+        pollutants: reading ? {
+          pm25: reading.pm25,
+          pm10: reading.pm10,
+          no2: reading.no2,
+          so2: reading.so2,
+          o3: reading.o3
+        } : {
           pm25: Math.round(baseAqi * 0.52),
           pm10: Math.round(baseAqi * 0.74),
           no2: Math.round(baseAqi * 0.22),
@@ -69,7 +66,8 @@ export default function App() {
         wind_toward_user: windToward,
         risk_score: score,
         risk_label: label,
-        last_updated: new Date().toISOString()
+        data_source: liveData?.source || 'Modeled fallback (live feed unavailable)',
+        last_updated: fetchedAt
       };
     });
 
@@ -78,7 +76,7 @@ export default function App() {
     setSelectedLandfill(nearest);
 
     const windText = nearest.wind_toward_user ? "blowing directly towards your area" : "blowing away from your vector";
-    const explanation = `${nearest.risk_label} Risk (${nearest.risk_score}/100). You are located ${nearest.distance_km} km from ${nearest.name} in ${nearest.city}. Current ambient AQI is ${nearest.current_aqi} with wind at ${nearest.wind.speed_kmh} km/h (${nearest.wind.direction_deg}° ${nearest.wind.cardinal}), ${windText}.`;
+    const explanation = `${nearest.risk_label} relative risk (${nearest.risk_score}/100). You are ${nearest.distance_km} km from ${nearest.name} in ${nearest.city}. The ${liveData ? 'modeled' : 'fallback'} AQI is ${nearest.current_aqi}; wind is ${nearest.wind.speed_kmh} km/h (${nearest.wind.direction_deg}° ${nearest.wind.cardinal}), ${windText}.`;
 
     setRiskData({
       landfill: nearest.name,
@@ -88,9 +86,12 @@ export default function App() {
       wind_toward_user: nearest.wind_toward_user,
       risk_score: nearest.risk_score,
       risk_label: nearest.risk_label,
-      explanation: explanation,
-      last_updated: nearest.last_updated,
-      disclaimer: "Modeled estimate, refreshed every 15 min.",
+      explanation,
+      last_updated: fetchedAt,
+      data_source: nearest.data_source,
+      disclaimer: liveData
+        ? 'AQI and weather are model-based estimates from Open-Meteo, not measurements from a local landfill or air-quality sensor.'
+        : 'Live environmental feeds are unavailable. Values shown are generated demo estimates, not live measurements.',
       user_coordinates: location,
       nearest_landfill_details: nearest,
       all_landfills: processed
@@ -101,7 +102,7 @@ export default function App() {
     evaluateRisk(userLocation);
   }, [userLocation, evaluateRisk]);
 
-  // Handle GPS location request
+  // Refresh the provider data on its current weather update cadence.\n  useEffect(() => {\n    const timer = window.setInterval(() => {\n      evaluateRisk(userLocation, { forceRefresh: true });\n    }, 15 * 60 * 1000);\n    return () => window.clearInterval(timer);\n  }, [userLocation, evaluateRisk]);\n\n  // Handle GPS location request
   const handleUseLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -160,7 +161,7 @@ export default function App() {
   // Force cache refresh action
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    await evaluateRisk(userLocation);
+    await evaluateRisk(userLocation, { forceRefresh: true });
     setTimeout(() => setIsRefreshing(false), 800);
   };
 
