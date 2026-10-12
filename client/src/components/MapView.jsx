@@ -260,8 +260,10 @@ export default function MapView({
           aria-controls="map-layer-options"
           onClick={() => setIsLayerMenuOpen((open) => !open)}
         >
-          <span className="sr-only">Map style: {TILE_LAYERS[mapTileStyle].name}</span>
-          <MapIcon className="w-5 h-5 text-sky-300" aria-hidden="true" />
+          <span className="flex items-center gap-2">
+            <MapIcon className="w-5 h-5 text-sky-300" aria-hidden="true" />
+            <span>{TILE_LAYERS[mapTileStyle].name}</span>
+          </span>
           <ChevronDown className={"map-overlay-chevron w-4 h-4 " + (isLayerMenuOpen ? 'rotate-180' : '')} />
         </button>
         {isLayerMenuOpen && (
