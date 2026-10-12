@@ -64,6 +64,7 @@ export default function App() {
           cardinal: degreesToCardinal(windDeg)
         },
         wind_toward_user: windToward,
+        precipitation_mm: reading?.precipitation_mm ?? null,
         risk_score: score,
         risk_label: label,
         data_source: liveData?.source || 'Modeled fallback (live feed unavailable)',
