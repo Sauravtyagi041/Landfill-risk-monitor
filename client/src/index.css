@@ -252,3 +252,97 @@ code, pre, .font-mono {
     margin-bottom: 8px !important;
   }
 }
+
+
+/* Compact, expandable map overlays keep the map and layer switcher accessible on phones and tablets. */
+.map-overlay-toggle {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .map-layer-control {
+    top: 8px;
+    right: 8px;
+    left: auto;
+    z-index: 1000;
+    gap: 2px;
+    padding: 3px;
+  }
+  .map-layer-button {
+    min-height: 36px;
+    padding: 6px 9px;
+    font-size: 11px;
+  }
+  .map-range-card {
+    top: 54px;
+    left: 8px;
+    max-width: calc(100% - 16px);
+    width: max-content;
+    padding: 0;
+    overflow: hidden;
+  }
+  .map-risk-legend {
+    bottom: 8px;
+    left: 8px;
+    max-width: calc(100% - 16px);
+    padding: 0;
+    overflow: hidden;
+  }
+  .map-overlay-toggle {
+    display: flex;
+    min-height: 40px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 8px 10px;
+    color: #e2e8f0;
+    font-size: 12px;
+    line-height: 1.25;
+    font-weight: 700;
+    text-align: left;
+    touch-action: manipulation;
+  }
+  .map-overlay-chevron {
+    flex: 0 0 auto;
+    transition: transform 160ms ease;
+  }
+  .map-range-card.is-expanded .map-overlay-chevron,
+  .map-risk-legend.is-expanded .map-overlay-chevron {
+    transform: rotate(180deg);
+  }
+  .map-range-details,
+  .map-legend-details {
+    padding: 0 10px 10px;
+  }
+  .map-range-card.is-collapsed .map-range-details,
+  .map-risk-legend.is-collapsed .map-legend-details {
+    display: none;
+  }
+  .map-range-details {
+    max-height: 30dvh;
+    overflow-y: auto;
+  }
+  .map-risk-legend .map-legend-details > div:first-child {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .map-layer-control {
+    top: 8px;
+    right: 8px;
+  }
+  .map-layer-button {
+    min-height: 38px;
+    padding: 6px 8px;
+    font-size: 10px;
+  }
+  .map-range-card {
+    top: 54px;
+    max-width: min(240px, calc(100% - 16px));
+  }
+  .map-risk-legend {
+    max-width: min(190px, calc(100% - 16px));
+  }
+}
