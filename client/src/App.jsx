@@ -102,7 +102,15 @@ export default function App() {
     evaluateRisk(userLocation);
   }, [userLocation, evaluateRisk]);
 
-  // Refresh the provider data on its current weather update cadence.\n  useEffect(() => {\n    const timer = window.setInterval(() => {\n      evaluateRisk(userLocation, { forceRefresh: true });\n    }, 15 * 60 * 1000);\n    return () => window.clearInterval(timer);\n  }, [userLocation, evaluateRisk]);\n\n  // Handle GPS location request
+  // Refresh the provider data on its current weather update cadence.
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      evaluateRisk(userLocation, { forceRefresh: true });
+    }, 15 * 60 * 1000);
+    return () => window.clearInterval(timer);
+  }, [userLocation, evaluateRisk]);
+
+  // Handle GPS location request
   const handleUseLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
