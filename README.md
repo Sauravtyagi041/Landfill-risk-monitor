@@ -4,7 +4,7 @@ LandRisk is a map-based dashboard for exploring modeled exposure risk around maj
 
 **Project:** [Landfill Risk Monitor on GitHub](https://github.com/Sauravtyagi041/Landfill-risk-monitor)
 
-**Prototype (local):** [http://localhost:3000](http://localhost:3000) — start the dashboard with `npm run dev` from the `client/` directory.
+**Live prototype:** [Open the LandRisk dashboard](https://landfill-risk-monitor.vercel.app/)
 
 > **Note:** LandRisk is a demonstration and decision-support prototype. Its modeled scores are not medical advice, regulatory measurements, or a substitute for official environmental monitoring.
 
@@ -35,7 +35,7 @@ npm install
 npm run dev
 ```
 
-Open the local URL printed by Vite (the project config uses port `3000`). To create a production frontend bundle:
+Open [http://localhost:3000/](http://localhost:3000/) or the local URL printed by Vite (the project config uses port `3000`). This local link only works while the development server is running on your computer. To create a production frontend bundle:
 
 ```bash
 npm run build
