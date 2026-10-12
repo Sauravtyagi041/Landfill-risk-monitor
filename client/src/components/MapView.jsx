@@ -134,7 +134,7 @@ export default function MapView({
       >
         <MapController center={[userLocation.lat, userLocation.lon]} />
         <MapClickHandler onClick={onMapClick} />
-        <ZoomControl position="bottomright" />
+        <ZoomControl position="bottomleft" />
 
         <TileLayer
           key={mapTileStyle}
