@@ -306,11 +306,17 @@ export default function MapView({
       </div>
 
       <div className={"map-risk-legend absolute bottom-4 left-4 z-[500] bg-slate-900/95 border border-slate-700 p-3 rounded-xl shadow-xl text-xs space-y-2 " + (isRiskLegendExpanded ? 'is-expanded' : 'is-collapsed')}>
-        <button type="button" className="map-overlay-toggle map-legend-toggle" aria-expanded={isRiskLegendExpanded} onClick={() => setIsRiskLegendExpanded((expanded) => !expanded)}>
+        <button
+          type="button"
+          className="map-overlay-toggle map-legend-toggle"
+          aria-expanded={isRiskLegendExpanded}
+          aria-controls="risk-legend-details"
+          onClick={() => setIsRiskLegendExpanded((expanded) => !expanded)}
+        >
           <span className="flex items-center gap-2"><Radio className="w-3.5 h-3.5 text-sky-400" />Risk legend</span>
-          <ChevronDown className="map-overlay-chevron w-4 h-4" />
+          <ChevronDown className={"map-overlay-chevron w-4 h-4 " + (isRiskLegendExpanded ? 'rotate-180' : '')} />
         </button>
-        <div className="map-legend-details">
+        <div id="risk-legend-details" className="map-legend-details">
           <div className="flex items-center gap-2 font-semibold text-slate-200">
             <Radio className="w-3.5 h-3.5 text-sky-400" />
             Risk at landfill sites
