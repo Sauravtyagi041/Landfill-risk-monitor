@@ -254,14 +254,14 @@ export default function MapView({
       <div className={"map-layer-control absolute top-4 right-4 z-[500] bg-slate-900/95 border border-slate-700 p-1 rounded-xl shadow-xl " + (isLayerMenuOpen ? 'is-open' : '')}>
         <button
           type="button"
-          className="map-layer-menu-trigger flex items-center justify-center gap-3 px-3 py-2 rounded-lg text-sm font-semibold text-slate-100 hover:bg-slate-800"
+          className="map-layer-menu-trigger flex items-center justify-center gap-2 px-2 py-1.5 rounded-lg text-xs font-semibold text-slate-100 hover:bg-slate-800"
           aria-label={`Map style: ${TILE_LAYERS[mapTileStyle].name}`}
           aria-expanded={isLayerMenuOpen}
           aria-controls="map-layer-options"
           onClick={() => setIsLayerMenuOpen((open) => !open)}
         >
           <span className="flex items-center gap-2">
-            <MapIcon className="w-5 h-5 text-sky-300" aria-hidden="true" />
+            <MapIcon className="w-4 h-4 text-sky-300" aria-hidden="true" />
             <span>{TILE_LAYERS[mapTileStyle].name}</span>
           </span>
           <ChevronDown className={"map-overlay-chevron w-4 h-4 " + (isLayerMenuOpen ? 'rotate-180' : '')} />
