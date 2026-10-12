@@ -8,8 +8,8 @@ export default function PollutantBreakdown({ pollutants }) {
     { name: 'PM2.5', label: 'Fine Particles', value: pollutants.pm25 ?? 78, max: 150, unit: 'µg/m³', color: 'bg-rose-500' },
     { name: 'PM10', label: 'Coarse Dust', value: pollutants.pm10 ?? 112, max: 250, unit: 'µg/m³', color: 'bg-amber-500' },
     { name: 'NO2', label: 'Nitrogen Dioxide', value: pollutants.no2 ?? 34, max: 100, unit: 'µg/m³', color: 'bg-sky-500' },
-    { name: 'SO2', label: 'Sulfur Dioxide', value: pollutants.so2 ?? 12, max: 80, unit: 'ppb', color: 'bg-teal-400' },
-    { name: 'O3', label: 'Ozone', value: pollutants.o3 ?? 18, max: 120, unit: 'ppb', color: 'bg-purple-400' },
+    { name: 'SO2', label: 'Sulfur Dioxide', value: pollutants.so2 ?? 12, max: 80, unit: 'µg/m³', color: 'bg-teal-400' },
+    { name: 'O3', label: 'Ozone', value: pollutants.o3 ?? 18, max: 120, unit: 'µg/m³', color: 'bg-purple-400' },
   ];
 
   return (
