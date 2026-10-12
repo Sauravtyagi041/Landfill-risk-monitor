@@ -167,7 +167,7 @@ export default function App() {
   const landfillsList = riskData?.all_landfills || SEED_LANDFILLS;
 
   return (
-    <div className="flex flex-col h-screen bg-slate-950 text-slate-100 overflow-hidden font-sans">
+    <div className="flex flex-col min-h-screen bg-slate-950 text-slate-100 overflow-x-hidden font-sans md:h-screen md:min-h-0 md:overflow-hidden">
       {/* Header Bar */}
       <Header
         onUseLocation={handleUseLocation}
@@ -179,9 +179,9 @@ export default function App() {
       />
 
       {/* Main Responsive Dashboard Body */}
-      <div className="flex-1 dashboard-grid overflow-hidden">
+      <div className="flex-1 dashboard-grid min-h-0">
         {/* Left Column: Interactive Map */}
-        <div className="relative w-full h-full bg-slate-900 border-r border-slate-800">
+        <div className="dashboard-map relative w-full h-full bg-slate-900 border-r border-slate-800">
           <MapView
             userLocation={userLocation}
             landfills={landfillsList}
@@ -192,7 +192,7 @@ export default function App() {
         </div>
 
         {/* Right Column: Risk Analytics Side Card */}
-        <div className="h-full overflow-y-auto bg-slate-950 flex flex-col justify-between border-l border-slate-800">
+        <div className="dashboard-risk h-full overflow-y-auto bg-slate-950 flex flex-col justify-between border-l border-slate-800">
           <RiskCard data={riskData} isRefreshing={isRefreshing} />
         </div>
       </div>
