@@ -31,7 +31,7 @@ export async function fetchLiveEnvironmentalReadings(landfills, { forceRefresh =
   weatherUrl.search = new URLSearchParams({
     latitude,
     longitude,
-    current: 'wind_speed_10m,wind_direction_10m',
+    current: 'wind_speed_10m,wind_direction_10m,precipitation',
     wind_speed_unit: 'kmh',
     timezone: 'auto'
   });
@@ -81,6 +81,7 @@ export async function fetchLiveEnvironmentalReadings(landfills, { forceRefresh =
       o3: Number(air.ozone),
       wind_speed_kmh: Number(weather.wind_speed_10m),
       wind_direction_deg: Number(weather.wind_direction_10m),
+      precipitation_mm: Number.isFinite(Number(weather?.precipitation)) ? Number(weather.precipitation) : null,
       provider_time: air.time || weather.time || null
     };
   });
