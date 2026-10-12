@@ -115,6 +115,24 @@ export default function App() {
     }
   };
 
+  // Keep the risk panel synchronized when a landfill marker is selected.
+  const handleSelectLandfill = (lf) => {
+    setSelectedLandfill(lf);
+    if (!lf) return;
+    setRiskData((current) => current ? ({
+      ...current,
+      landfill: lf.name,
+      landfill_id: lf.id,
+      distance_km: lf.distance_km ?? current.distance_km,
+      current_aqi: lf.current_aqi ?? current.current_aqi,
+      wind_toward_user: lf.wind_toward_user ?? false,
+      risk_score: lf.risk_score ?? current.risk_score,
+      risk_label: lf.risk_label ?? current.risk_label,
+      nearest_landfill_details: lf,
+      explanation: `${lf.risk_label || 'Modeled'} risk at ${lf.name} in ${lf.city}. The assessment location is ${lf.distance_km ?? current.distance_km} km away; the shaded map cone estimates the downwind area from current modeled wind.`
+    }) : current);
+  };
+
   // Handle map click to reposition vector
   const handleMapClick = (lat, lon) => {
     const newLoc = { lat: Math.round(lat * 10000) / 10000, lon: Math.round(lon * 10000) / 10000 };
@@ -167,7 +185,7 @@ export default function App() {
             userLocation={userLocation}
             landfills={landfillsList}
             selectedLandfill={selectedLandfill}
-            onSelectLandfill={(lf) => setSelectedLandfill(lf)}
+            onSelectLandfill={handleSelectLandfill}
             onMapClick={handleMapClick}
           />
         </div>
