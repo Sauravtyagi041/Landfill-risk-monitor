@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Polyline, Polygon, useMapEvents, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, Polygon, CircleMarker, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { generatePlumePolygon } from '../utils/riskCalculator';
 import { Radio } from 'lucide-react';
@@ -92,16 +92,28 @@ export default function MapView({
   const tileLayer = TILE_LAYERS[mapTileStyle];
   const selectedLf = landfills.find(lf => lf.id === selectedLandfill?.id) || landfills[0];
 
+  const windSpeedKmh = Number(selectedLf?.wind?.speed_kmh) || 12;
+  const plumeRangeKm = Math.round(Math.min(20, Math.max(3, windSpeedKmh * 0.65)) * 10) / 10;
+  const windFromDeg = Number(selectedLf?.wind?.direction_deg) || 245;
+  const plumeHeading = (windFromDeg + 180) % 360;
   const plumePoints = useMemo(() => {
     if (!selectedLf) return [];
     return generatePlumePolygon(
       selectedLf.lat,
       selectedLf.lon,
-      selectedLf.wind?.direction_deg ?? 245,
-      Math.min(12, Math.max(4, (selectedLf.distance_km ?? 5) * 1.5)),
+      windFromDeg,
+      plumeRangeKm,
       52
     );
-  }, [selectedLf]);
+  }, [selectedLf, windFromDeg, plumeRangeKm]);
+
+  const plumeEndpoint = useMemo(() => {
+    if (!selectedLf) return null;
+    const angle = (plumeHeading * Math.PI) / 180;
+    const lat = selectedLf.lat + (plumeRangeKm * Math.cos(angle)) / 111;
+    const lon = selectedLf.lon + (plumeRangeKm * Math.sin(angle)) / (111 * Math.cos((selectedLf.lat * Math.PI) / 180));
+    return [lat, lon];
+  }, [selectedLf, plumeHeading, plumeRangeKm]);
 
   const plumeColor = RISK_COLORS[selectedLf?.risk_label] || RISK_COLORS.Low;
 
@@ -142,6 +154,22 @@ export default function MapView({
               lineCap: 'round'
             }}
           />
+        )}
+
+        {selectedLf && plumeEndpoint && (
+          <>
+            <Polyline
+              positions={[[selectedLf.lat, selectedLf.lon], plumeEndpoint]}
+              interactive={false}
+              pathOptions={{ color: plumeColor, weight: 2, dashArray: '3 6', opacity: 0.8 }}
+            />
+            <CircleMarker
+              center={plumeEndpoint}
+              radius={5}
+              interactive={false}
+              pathOptions={{ color: '#ffffff', weight: 2, fillColor: plumeColor, fillOpacity: 1 }}
+            />
+          </>
         )}
 
         {selectedLf && (
@@ -231,10 +259,14 @@ export default function MapView({
       </div>
 
       <div className="absolute top-4 left-4 z-[500] max-w-[220px] bg-slate-900/95 border border-slate-700 p-3 rounded-xl shadow-xl text-xs">
-        <p className="font-semibold text-slate-100">Modeled downwind area</p>
+        <p className="font-semibold text-slate-100">Estimated wind impact range</p>
         <p className="mt-1 text-[11px] leading-relaxed text-slate-300">
-          The shaded cone shows an indicative plume from {selectedLf?.name || 'the selected landfill'} based on modeled wind direction.
+          From {selectedLf?.name || 'the selected landfill'}, wind travels {plumeHeading}° ({selectedLf?.wind?.cardinal || 'SW'}) at {windSpeedKmh} km/h.
         </p>
+        <p className="mt-1 text-xs font-semibold text-sky-300">
+          Shaded downwind reach: up to {plumeRangeKm} km
+        </p>
+        <p className="mt-1 text-[10px] text-slate-400">Indicative model only; actual dispersion varies with weather and terrain.</p>
       </div>
 
       <div className="absolute bottom-4 left-4 z-[500] bg-slate-900/95 border border-slate-700 p-3 rounded-xl shadow-xl text-xs space-y-2">
