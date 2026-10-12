@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, Polygon, CircleMarker, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import { generatePlumePolygon } from '../utils/riskCalculator';
+import { generatePlumePolygon, degreesToCardinal } from '../utils/riskCalculator';
 import { Radio } from 'lucide-react';
 
 const TILE_LAYERS = {
@@ -49,7 +49,7 @@ function createLandfillIcon(riskLabel = 'Low', isSelected = false) {
 }
 
 const userIcon = L.divIcon({
-  html: '<div class="user-location-marker"><span></span></div>',
+  html: '<div class="relative flex items-center justify-center w-8 h-8"><div class="absolute w-8 h-8 bg-sky-500/30 rounded-full animate-ping"></div><div class="relative w-5 h-5 bg-sky-500 rounded-full border-2 border-white shadow-lg flex items-center justify-center"><div class="w-1.5 h-1.5 bg-white rounded-full"></div></div></div>',
   className: 'custom-user-marker',
   iconSize: [36, 36],
   iconAnchor: [18, 18]
@@ -92,10 +92,11 @@ export default function MapView({
   const tileLayer = TILE_LAYERS[mapTileStyle];
   const selectedLf = landfills.find(lf => lf.id === selectedLandfill?.id) || landfills[0];
 
-  const windSpeedKmh = Number(selectedLf?.wind?.speed_kmh) || 12;
+  const windSpeedKmh = selectedLf?.wind?.speed_kmh == null ? 12 : Number(selectedLf.wind.speed_kmh);
   const plumeRangeKm = Math.round(Math.min(20, Math.max(3, windSpeedKmh * 0.65)) * 10) / 10;
-  const windFromDeg = Number(selectedLf?.wind?.direction_deg) || 245;
+  const windFromDeg = selectedLf?.wind?.direction_deg == null ? 245 : Number(selectedLf.wind.direction_deg);
   const plumeHeading = (windFromDeg + 180) % 360;
+  const plumeCardinal = degreesToCardinal(plumeHeading);
   const plumePoints = useMemo(() => {
     if (!selectedLf) return [];
     return generatePlumePolygon(
@@ -261,7 +262,7 @@ export default function MapView({
       <div className="absolute top-4 left-4 z-[500] max-w-[220px] bg-slate-900/95 border border-slate-700 p-3 rounded-xl shadow-xl text-xs">
         <p className="font-semibold text-slate-100">Estimated wind impact range</p>
         <p className="mt-1 text-[11px] leading-relaxed text-slate-300">
-          From {selectedLf?.name || 'the selected landfill'}, wind travels {plumeHeading}° ({selectedLf?.wind?.cardinal || 'SW'}) at {windSpeedKmh} km/h.
+          From {selectedLf?.name || 'the selected landfill'}, wind comes from {windFromDeg}° ({selectedLf?.wind?.cardinal || 'SW'}) at {windSpeedKmh} km/h and carries the plume toward {plumeHeading}° ({plumeCardinal}).
         </p>
         <p className="mt-1 text-xs font-semibold text-sky-300">
           Shaded downwind reach: up to {plumeRangeKm} km
