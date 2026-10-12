@@ -1,4 +1,4 @@
-# LandRisk — Landfill Environmental Risk Monitor
+# LandRisk - Landfill Environmental Risk Monitor
 
 An interactive dashboard prototype that combines current environmental model output with landfill proximity estimates for selected sites in India.
 
