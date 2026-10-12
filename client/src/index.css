@@ -182,3 +182,73 @@ code, pre, .font-mono {
 .location-tooltip::before {
   border-top-color: #0f172a !important;
 }
+
+
+/* Responsive dashboard: keep the map usable, then let the risk panel follow below it. */
+@media (max-width: 1024px) {
+  body { overflow-y: auto; }
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(360px, 54dvh) auto;
+    height: auto;
+    min-height: 0;
+    flex: none;
+    overflow: visible;
+  }
+  .dashboard-map {
+    height: min(54dvh, 560px) !important;
+    min-height: 360px;
+    border-right: 0;
+    border-bottom: 1px solid rgb(30 41 59);
+  }
+  .dashboard-map > div {
+    height: 100%;
+    min-height: 0;
+  }
+  .dashboard-risk {
+    height: auto !important;
+    min-height: 0;
+    overflow: visible;
+    border-left: 0;
+  }
+  .dashboard-risk > div {
+    height: auto !important;
+    overflow: visible !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-map {
+    height: 56dvh !important;
+    min-height: 340px;
+  }
+  .map-layer-control {
+    top: 8px;
+    right: 8px;
+    gap: 0;
+    padding: 3px;
+  }
+  .map-layer-button {
+    padding: 6px 8px;
+    font-size: 10px;
+  }
+  .map-range-card {
+    top: 56px;
+    left: 8px;
+    max-width: min(190px, calc(100vw - 16px));
+    padding: 8px;
+    font-size: 11px;
+  }
+  .map-range-card p:nth-of-type(2) { font-size: 10px; }
+  .map-risk-legend {
+    bottom: 8px;
+    left: 8px;
+    max-width: 160px;
+    padding: 8px;
+  }
+  .leaflet-control-zoom {
+    margin-right: 8px !important;
+    margin-bottom: 8px !important;
+  }
+}
