@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Polyline, Polygon, CircleMarker, useMapEvents, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, Polygon, CircleMarker, ZoomControl, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { generatePlumePolygon, degreesToCardinal } from '../utils/riskCalculator';
 import { Radio } from 'lucide-react';
@@ -88,7 +88,7 @@ export default function MapView({
   onSelectLandfill,
   onMapClick
 }) {
-  const [mapTileStyle, setMapTileStyle] = useState('dark');
+  const [mapTileStyle, setMapTileStyle] = useState('street');
   const tileLayer = TILE_LAYERS[mapTileStyle];
   const selectedLf = landfills.find(lf => lf.id === selectedLandfill?.id) || landfills[0];
 
@@ -126,11 +126,12 @@ export default function MapView({
         scrollWheelZoom
         preferCanvas
         className="w-full h-full"
-        zoomControl
+        zoomControl={false}
         attributionControl
       >
         <MapController center={[userLocation.lat, userLocation.lon]} />
         <MapClickHandler onClick={onMapClick} />
+        <ZoomControl position="bottomright" />
 
         <TileLayer
           key={mapTileStyle}
