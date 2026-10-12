@@ -26,7 +26,7 @@ export default function Header({ onUseLocation, onSearchLocation, onOpenArchitec
               LandRisk
             </h1>
             <span className="hidden sm:inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/30">
-              AWS Serverless v1.0
+              Open-Meteo model feed
             </span>
           </div>
           <p className="text-[11px] text-slate-400 font-mono hidden sm:block">
