@@ -205,6 +205,17 @@ export default function RiskCard({ data, isRefreshing }) {
             </p>
           </div>
         )}
+        {elevatedRisk && wind_toward_user && (
+          <div className="flex gap-2 rounded-lg bg-rose-500/10 border border-rose-400/30 p-3" role="status">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-rose-300" />
+            <div>
+              <p className="text-xs font-semibold text-rose-200">Air-quality precaution</p>
+              <p className="mt-1 text-[11px] leading-relaxed text-slate-300">
+                The model shows elevated risk with wind toward your location. If outdoor air quality is poor, keep windows and doors closed and check official local AQI updates. This is a precaution based on modeled data, not a verified landfill-emission alert.
+              </p>
+            </div>
+          </div>
+        )}
         <a
           href="https://www.epa.gov/wildfires/protect-yourself-wildfire-smoke-and-ash"
           target="_blank"
