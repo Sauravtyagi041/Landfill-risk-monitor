@@ -163,3 +163,22 @@ code, pre, .font-mono {
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+
+/* Dark map mode uses transformed OpenStreetMap tiles and needs no API key. */
+.landrisk-dark-tiles {
+  filter: invert(1) hue-rotate(180deg) brightness(0.86) contrast(0.92) saturate(0.82);
+}
+
+.location-tooltip {
+  background: #0f172a !important;
+  color: #e2e8f0 !important;
+  border: 1px solid rgba(56, 189, 248, 0.65) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.55) !important;
+  padding: 5px 8px !important;
+}
+
+.location-tooltip::before {
+  border-top-color: #0f172a !important;
+}
