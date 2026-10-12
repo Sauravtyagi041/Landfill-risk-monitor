@@ -347,7 +347,8 @@ code, pre, .font-mono {
   }
   .map-risk-legend {
     bottom: 8px;
-    left: 8px;
+    left: auto;
+    right: 8px;
     max-width: min(190px, calc(100vw - 16px));
     padding: 0;
     overflow: hidden;
@@ -403,7 +404,8 @@ code, pre, .font-mono {
   }
   .map-risk-legend {
     bottom: 8px;
-    left: 8px;
+    left: auto;
+    right: 8px;
     max-width: 160px;
   }
 }
