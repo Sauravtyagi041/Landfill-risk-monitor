@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Polyline, Polygon, CircleMarker, ZoomControl, useMapEvents, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, Polygon, CircleMarker, ZoomControl, Tooltip, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { generatePlumePolygon, degreesToCardinal } from '../utils/riskCalculator';
 import { Radio } from 'lucide-react';
@@ -12,8 +12,8 @@ const TILE_LAYERS = {
   },
   dark: {
     name: 'Dark',
-    url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   },
   satellite: {
     name: 'Satellite',
@@ -49,10 +49,10 @@ function createLandfillIcon(riskLabel = 'Low', isSelected = false) {
 }
 
 const userIcon = L.divIcon({
-  html: '<div class="relative flex items-center justify-center w-8 h-8"><div class="absolute w-8 h-8 bg-sky-500/30 rounded-full animate-ping"></div><div class="relative w-5 h-5 bg-sky-500 rounded-full border-2 border-white shadow-lg flex items-center justify-center"><div class="w-1.5 h-1.5 bg-white rounded-full"></div></div></div>',
+  html: '<div class="relative flex items-center justify-center w-11 h-11"><div class="absolute w-11 h-11 bg-sky-400/30 rounded-full animate-ping"></div><div class="absolute w-8 h-8 rounded-full border-2 border-white bg-sky-400/50 shadow-[0_0_0_4px_rgba(14,165,233,0.3)]"></div><div class="relative w-5 h-5 bg-sky-500 rounded-full border-[3px] border-white shadow-lg flex items-center justify-center"><div class="w-1 h-1 bg-white rounded-full"></div></div></div>',
   className: 'custom-user-marker',
-  iconSize: [36, 36],
-  iconAnchor: [18, 18]
+  iconSize: [44, 44],
+  iconAnchor: [22, 22]
 });
 
 function MapController({ center }) {
@@ -137,6 +137,7 @@ export default function MapView({
           key={mapTileStyle}
           attribution={tileLayer.attribution}
           url={tileLayer.url}
+          className={mapTileStyle === 'dark' ? 'landrisk-dark-tiles' : ''}
           updateWhenIdle
           updateWhenZooming={false}
           keepBuffer={2}
@@ -190,7 +191,10 @@ export default function MapView({
           />
         )}
 
-        <Marker position={[userLocation.lat, userLocation.lon]} icon={userIcon} zIndexOffset={1000}>
+        <Marker position={[userLocation.lat, userLocation.lon]} icon={userIcon} zIndexOffset={2000}>
+          <Tooltip permanent direction="top" offset={[0, -18]} className="location-tooltip">
+            <span><strong>Assessment location</strong><br />Click map to move</span>
+          </Tooltip>
           <Popup>
             <div className="p-1 font-sans text-xs">
               <p className="font-semibold text-sky-400">Assessment location</p>
