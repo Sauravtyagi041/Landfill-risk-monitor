@@ -314,7 +314,7 @@ export default function MapView({
           onClick={() => setIsRiskLegendExpanded((expanded) => !expanded)}
         >
           <span className="flex items-center gap-2"><Radio className="w-3.5 h-3.5 text-sky-400" />Risk legend</span>
-          <ChevronDown className={"map-overlay-chevron w-4 h-4 " + (isRiskLegendExpanded ? 'rotate-180' : '')} />
+          <ChevronDown className={"map-overlay-chevron w-4 h-4 " + (isRiskLegendExpanded ? '' : 'rotate-180')} />
         </button>
         <div id="risk-legend-details" className="map-legend-details">
           <div className="flex items-center gap-2 font-semibold text-slate-200">
