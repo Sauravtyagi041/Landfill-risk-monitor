@@ -49,6 +49,8 @@ export default function RiskCard({ data, isRefreshing }) {
   };
 
   const aqiCat = getAqiCategory(current_aqi);
+  const elevatedRisk = risk_label === 'High' || risk_label === 'Severe';
+  const moderateRisk = risk_label === 'Medium';
 
   return (
     <div className="h-full overflow-y-auto p-4 space-y-4 font-sans text-slate-100 bg-slate-950/80 backdrop-blur-md border-l border-slate-800/80">
@@ -161,6 +163,50 @@ export default function RiskCard({ data, isRefreshing }) {
         </div>
         <span className="font-mono font-bold">{wind_toward_user ? 'HIGH IMPACT' : 'NORMAL'}</span>
       </div>
+
+      {/* Context-aware safety advisory */}
+      <section
+        role="status"
+        aria-live="polite"
+        className={`p-4 rounded-xl border space-y-2 ${
+          elevatedRisk
+            ? 'bg-amber-500/10 border-amber-400/40'
+            : 'bg-sky-500/10 border-sky-400/30'
+        }`}
+      >
+        <div className={`flex items-center gap-2 text-xs font-bold uppercase tracking-wide ${
+          elevatedRisk ? 'text-amber-300' : 'text-sky-300'
+        }`}>
+          <AlertTriangle className="w-4 h-4" />
+          <span>{elevatedRisk ? 'Air quality action reminder' : 'Outdoor activity check'}</span>
+        </div>
+        <p className="text-xs leading-relaxed text-slate-200">
+          {elevatedRisk
+            ? `The modeled risk near ${landfill} is ${risk_label.toLowerCase()}. Consider delaying strenuous outdoor activity and check your local official AQI before heading out.`
+            : moderateRisk
+            ? 'The model shows moderate relative risk here. Consider keeping outdoor exertion shorter if local particle pollution is elevated.'
+            : 'The model shows lower relative risk here, but it is not an all-clear. Check local official air-quality updates before making outdoor plans.'}
+        </p>
+        {elevatedRisk && (
+          <div className="rounded-lg bg-slate-950/60 border border-amber-400/20 p-3">
+            <p className="text-xs font-semibold text-amber-200">Mask reminder for particle pollution</p>
+            <p className="mt-1 text-[11px] leading-relaxed text-slate-300">
+              If going outside during high particle pollution is unavoidable, a well-fitting N95 respirator may reduce particle exposure. It does not protect against gases or vapors.
+            </p>
+          </div>
+        )}
+        <a
+          href="https://www.epa.gov/wildfires/protect-yourself-wildfire-smoke-and-ash"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex text-[11px] font-semibold text-sky-300 underline underline-offset-2 hover:text-sky-200"
+        >
+          EPA guidance on reducing particle exposure
+        </a>
+        <p className="text-[10px] text-slate-400">
+          General information only. This prototype uses modeled readings and is not a public-health alert.
+        </p>
+      </section>
 
       {/* Key Contributing Factors List */}
       <div className="glass-panel p-4 rounded-xl border border-slate-800 space-y-2">
