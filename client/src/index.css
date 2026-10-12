@@ -340,6 +340,9 @@ code, pre, .font-mono {
   .map-range-card {
     top: 8px !important;
     left: 8px;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(50% - 16px);
     width: min(190px, calc(100vw - 172px)) !important;
     max-width: min(190px, calc(100vw - 172px)) !important;
     padding: 0;
@@ -347,9 +350,10 @@ code, pre, .font-mono {
   }
   .map-risk-legend {
     bottom: 8px;
-    left: auto;
-    right: 8px;
+    left: 8px;
+    right: auto;
     max-width: min(190px, calc(100vw - 16px));
+    max-height: calc(50% - 16px);
     padding: 0;
     overflow: hidden;
   }
@@ -373,7 +377,12 @@ code, pre, .font-mono {
     display: none;
   }
   .map-range-details {
-    max-height: 22dvh;
+    min-height: 0;
+    max-height: none;
+    overflow-y: auto;
+  }
+  .map-legend-details {
+    min-height: 0;
     overflow-y: auto;
   }
   .map-risk-legend .map-legend-details > div:first-child {
@@ -391,12 +400,15 @@ code, pre, .font-mono {
   .map-range-card {
     top: 8px !important;
     left: 8px;
+    max-height: calc(50% - 16px);
     width: min(166px, calc(100vw - 164px)) !important;
     max-width: min(166px, calc(100vw - 164px)) !important;
     font-size: 11px;
   }
   .map-range-card.is-expanded .map-range-details {
-    max-height: 20dvh;
+    min-height: 0;
+    max-height: none;
+    overflow-y: auto;
   }
   .map-range-card.is-collapsed .map-range-details,
   .map-risk-legend.is-collapsed .map-legend-details {
@@ -404,8 +416,9 @@ code, pre, .font-mono {
   }
   .map-risk-legend {
     bottom: 8px;
-    left: auto;
-    right: 8px;
+    left: 8px;
+    right: auto;
     max-width: 160px;
+    max-height: calc(50% - 16px);
   }
 }
